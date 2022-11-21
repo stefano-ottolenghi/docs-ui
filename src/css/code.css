@@ -83,11 +83,15 @@
 
 .doc .show-more {
   position: absolute;
-  bottom: 0;
-  height: 2rem;
+  top: 50px;
+  height: 100%;
   width: 100%;
   text-align: center;
   cursor: pointer;
+  border-radius: 12px;
+  color: #616061;
+  padding: 0 12px 0 8px;
+  pointer-events: none;
 }
 
 .doc .code-footer.has-results {

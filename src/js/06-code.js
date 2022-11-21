@@ -197,34 +197,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var expandCollapseBlock = function (e) {
     e.preventDefault()
-    var showMore = e.target
-    var pre = showMore.parentNode
-    var codeBlock = pre.querySelector('code')
+    //var showMore = e.target
+    var codeBlock = e.target
+    var pre = codeBlock.parentNode
+    //var pre = showMore.parentNode
+    //var codeBlock = pre.querySelector('code')
+    const event = document.createEvent('Event')
+    // Define that the event name is 'build'.
+    event.initEvent('mouseleave', true, true)
+    codeBlock.dispatchEvent(event)
+    codeBlock.removeEventListener('mouseover', displayShowMore)
+    codeBlock.removeEventListener('mouseleave', hideShowMore)
+    codeBlock.removeEventListener('click', expandCollapseBlock)
+    pre.style.maxHeight = pre.scrollHeight + 'px'
+    pre.style.overflow = 'visible'
+    codeBlock.style.webkitMaskImage = ''
+    codeBlock.style.maskImage = ''
+  }
 
-    if (pre.style.overflow === 'hidden') {
-      window.sessionStorage.setItem('scrollpos', window.scrollY)
-      pre.style.maxHeight = pre.scrollHeight + 'px'
-      pre.style.overflow = 'visible'
-      codeBlock.style.webkitMaskImage = ''
-      codeBlock.style.maskImage = ''
-      showMore.innerHTML = '&uarr;' // show less
-    } else {
-      // Scoll back to where you where before expanding
-      var scrollpos = window.sessionStorage.getItem('scrollpos')
-      if (scrollpos) {
-        window.scrollTo({
-          top: scrollpos,
-          behavior: 'auto',
-        })
-      }
-      window.sessionStorage.removeItem('scrollpos')
+  var displayShowMore = function (e) {
+    e.preventDefault()
+    var codeBlock = e.target
+    var pre = codeBlock.parentNode
+    var showMore = pre.querySelector('.show-more')
+    showMore.style.display = 'inline'
+  }
 
-      pre.style.maxHeight = codeBlockMaxHeight + 'px'
-      pre.style.overflow = 'hidden'
-      codeBlock.style.webkitMaskImage = styleMaskImage
-      codeBlock.style.maskImage = styleMaskImage
-      showMore.innerHTML = '&darr; Show more &darr;' // show more
-    }
+  var hideShowMore = function (e) {
+    e.preventDefault()
+    var codeBlock = e.target
+    var pre = codeBlock.parentNode
+    var showMore = pre.querySelector('.show-more')
+    showMore.style.display = 'none'
   }
 
   // Collapse long blocks on load
@@ -239,11 +243,17 @@ document.addEventListener('DOMContentLoaded', function () {
       pre.style.overflow = 'hidden'
       codeBlock.style.webkitMaskImage = styleMaskImage
       codeBlock.style.maskImage = styleMaskImage
+      codeBlock.addEventListener('mouseover', displayShowMore)
+      codeBlock.addEventListener('mouseleave', hideShowMore)
 
-      var showMore = createElement('a', 'show-more')
-      showMore.innerHTML = '&darr; Show more &darr;'
-      showMore.addEventListener('click', expandCollapseBlock)
+      var showMore = createElement('div', 'show-more')
+      showMore.style.display = 'none'
+      showMore.style.top = codeBlockMaxHeight / 2 + 'px'
+      codeBlock.addEventListener('click', expandCollapseBlock)
       pre.appendChild(showMore)
+      var button = createElement('button')
+      button.innerHTML = '&darr; Show more &darr;'
+      showMore.appendChild(button)
     }
   }
 
